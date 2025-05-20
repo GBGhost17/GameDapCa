@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Đập Chuột (Mobile + Âm thanh)</title>
+  <style>
+    body {
+      font-family: 'Arial', sans-serif;
+      background: #2c3e50;
+      color: white;
+      text-align: center;
+      margin: 0;
+      padding: 0 10px 30px;
+      user-select: none;
+    }
+
+    h1 {
+      margin-top: 20px;
+      font-size: 1.8rem;
+      color: #dd0f27;
+    }
+
+    #score, #time {
+      font-size: 1.3rem;
+      margin: 10px 0;
+      color: #27ae60;
+    }
+
+    #game {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      grid-gap: 12px;
+      max-width: 400px;
+      margin: 20px auto;
+    }
+
+    .hole {
+      background-color: #34495e;
+      border-radius: 10px;
+      position: relative;
+      aspect-ratio: 1 / 1;
+      cursor: pointer;
+      box-shadow: inset 0 0 8px #222;
+      touch-action: manipulation;
+    }
+
+    .mole {
+      background-image: url('Avatar.png');
+      background-size: contain;
+      background-repeat: no-repeat;
+      background-position: center;
+      position: absolute;
+      top: 15%;
+      left: 15%;
+      width: 70%;
+      height: 70%;
+      display: none;
+      transition: transform 0.1s;
+    }
+
+    .mole:active {
+      transform: scale(0.9);
+    }
+
+    button {
+      margin-top: 20px;
+      padding: 12px 30px;
+      font-size: 1.2rem;
+      background: #27ae60;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      user-select: none;
+      box-shadow: 0 4px 0 #1e8449;
+      transition: background 0.3s;
+    }
+
+    button:active {
+      background: #1e8449;
+      box-shadow: none;
+      transform: translateY(2px);
+    }
+
+    @media (min-width: 600px) {
+      #game {
+        max-width: 500px;
+      }
+      h1 {
+        font-size: 2.5rem;
+      }
+      #score, #time {
+        font-size: 1.5rem;
+      }
+      button {
+        font-size: 1.4rem;
+        padding: 15px 40px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <h1>🎯 Game Đập Thằng Bảo 🎯</h1>
+  <div id="score">Điểm: 0</div>
+  <div id="time">Thời gian: 30</div>
+  <div id="game">
+    <div class="hole"><div class="mole"></div></div>
+    <div class="hole"><div class="mole"></div></div>
+    <div class="hole"><div class="mole"></div></div>
+    <div class="hole"><div class="mole"></div></div>
+    <div class="hole"><div class="mole"></div></div>
+    <div class="hole"><div class="mole"></div></div>
+    <div class="hole"><div class="mole"></div></div>
+    <div class="hole"><div class="mole"></div></div>
+    <div class="hole"><div class="mole"></div></div>
+  </div>
+  <button onclick="startGame()">Bắt đầu chơi</button>
+
+  <script>
+    const moles = document.querySelectorAll('.mole');
+    const scoreDisplay = document.getElementById('score');
+    const timeDisplay = document.getElementById('time');
+
+    let score = 0;
+    let timeLeft = 30;
+    let gameInterval;
+    let moleInterval;
+
+    function playHitSound() {
+      const sound = new Audio('https://freesound.org/data/previews/522/522013_7037-lq.mp3');
+      sound.volume = 0.7;
+      sound.play();
+    }
+
+    function randomHole() {
+      moles.forEach(m => {
+        m.style.display = 'none';
+        m.onclick = null;
+      });
+
+      const index = Math.floor(Math.random() * moles.length);
+      const mole = moles[index];
+      mole.style.display = 'block';
+
+      mole.onclick = () => {
+        score++;
+        scoreDisplay.textContent = 'Điểm: ' + score;
+        mole.style.display = 'none';
+        playHitSound();
+      }
+    }
+
+    function startGame() {
+      score = 0;
+      timeLeft = 30;
+      scoreDisplay.textContent = 'Điểm: 0';
+      timeDisplay.textContent = 'Thời gian: 30';
+
+      clearInterval(gameInterval);
+      clearInterval(moleInterval);
+
+      gameInterval = setInterval(() => {
+        timeLeft--;
+        timeDisplay.textContent = 'Thời gian: ' + timeLeft;
+        if (timeLeft <= 0) {
+          clearInterval(gameInterval);
+          clearInterval(moleInterval);
+          moles.forEach(m => {
+            m.style.display = 'none';
+            m.onclick = null;
+          });
+          alert('Hết giờ! Bạn được ' + score + ' điểm.');
+        }
+      }, 1000);
+
+      randomHole();
+      moleInterval = setInterval(randomHole, 800);
+    }
+  </script>
+</body>
+</html>
